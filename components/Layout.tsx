@@ -28,15 +28,63 @@ export const Navbar = () => {
           <a href="#contact" className="hover:text-white transition-colors">Contact</a>
         </div>
 
-        <button className="px-5 py-2 bg-white text-black text-sm font-bold rounded-full hover:scale-105 transition-transform active:scale-95">
-          Resume
-        </button>
+        <div className="hidden md:flex items-center gap-4">
+          <a 
+            href="https://github.com/HanzalaKamran1234" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="p-2 hover:text-accent transition-colors"
+          >
+            <GithubIcon />
+          </a>
+          <button className="px-5 py-2 bg-white text-black text-sm font-bold rounded-full hover:scale-105 transition-transform active:scale-95">
+            Resume
+          </button>
+        </div>
       </div>
     </nav>
   );
 };
 
+import { useState } from "react";
+
 export const Contact = () => {
+  const [formData, setFormData] = useState({ name: "", email: "", message: "" });
+  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setStatus("loading");
+    setErrorMessage("");
+
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error?.message || "Something went wrong. Please try again.");
+      }
+
+      setStatus("success");
+      setFormData({ name: "", email: "", message: "" });
+    } catch (err: any) {
+      console.error("Submission error:", err);
+      setStatus("error");
+      setErrorMessage(err.message || "Failed to send message.");
+    }
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
   return (
     <section id="contact" className="py-24 px-4 relative">
       <div className="max-w-4xl mx-auto glass rounded-3xl p-8 md:p-12 relative overflow-hidden border border-white/10">
@@ -55,25 +103,70 @@ export const Contact = () => {
                 <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center border border-white/5">
                   <Send className="w-4 h-4" />
                 </div>
-                <span>hello@hanzala.dev</span>
+                <span>growtoglow44@gmail.com</span>
               </div>
               <div className="flex items-center gap-4 text-white/70">
                 <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center border border-white/5">
                   <MessageSquare className="w-4 h-4" />
                 </div>
-                <span>Schedule a 15m consultation</span>
+                <span>Available for consultation</span>
               </div>
             </div>
           </div>
 
-          <form className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
-              <input type="text" placeholder="Name" className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent transition-colors" />
-              <input type="email" placeholder="Email" className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent transition-colors" />
+              <input 
+                type="text" 
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                placeholder="Name" 
+                required
+                disabled={status === "loading"}
+                className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent transition-colors disabled:opacity-50" 
+              />
+              <input 
+                type="email" 
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                placeholder="Email" 
+                required
+                disabled={status === "loading"}
+                className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent transition-colors disabled:opacity-50" 
+              />
             </div>
-            <textarea rows={4} placeholder="Tell me about your project..." className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent transition-colors resize-none"></textarea>
-            <button type="button" className="w-full py-4 bg-accent text-black font-bold rounded-xl hover:opacity-90 transition-opacity active:scale-[0.98]">
-              Send Message
+            <textarea 
+              name="message"
+              value={formData.message}
+              onChange={handleChange}
+              rows={4} 
+              placeholder="Tell me about your project..." 
+              required
+              disabled={status === "loading"}
+              className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent transition-colors resize-none disabled:opacity-50"
+            ></textarea>
+            
+            {status === "success" && (
+              <p className="text-green-400 text-sm font-medium">Message sent successfully! I'll get back to you soon.</p>
+            )}
+            
+            {status === "error" && (
+              <p className="text-red-400 text-sm font-medium">{errorMessage}</p>
+            )}
+
+            <button 
+              type="submit" 
+              disabled={status === "loading"}
+              className="w-full py-4 bg-accent text-black font-bold rounded-xl hover:opacity-90 transition-opacity active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            >
+              {status === "loading" ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-black/20 border-t-black rounded-full animate-spin" />
+                  Sending...
+                </>
+              ) : "Send Message"}
             </button>
           </form>
         </div>
@@ -96,7 +189,14 @@ export const Footer = () => {
         </div>
 
         <div className="flex items-center gap-4">
-          <a href="#" className="p-2 hover:text-accent transition-colors"><GithubIcon /></a>
+          <a 
+            href="https://github.com/HanzalaKamran1234" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="p-2 hover:text-accent transition-colors"
+          >
+            <GithubIcon />
+          </a>
           <a href="#" className="p-2 hover:text-accent transition-colors"><LinkedinIcon /></a>
         </div>
       </div>
