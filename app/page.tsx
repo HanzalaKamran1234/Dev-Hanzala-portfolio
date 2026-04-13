@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { AnimatePresence } from "framer-motion";
 import Hero from "@/components/Hero";
+import About from "@/components/About";
 import ProjectGrid from "@/components/ProjectGrid";
 import Skills from "@/components/Skills";
 import Process from "@/components/Process";
@@ -34,6 +35,7 @@ export default function Home() {
         <>
           <Navbar />
           <Hero />
+          <About />
           <ProjectGrid />
           <Skills />
           <Process />

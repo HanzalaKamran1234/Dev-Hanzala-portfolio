@@ -1,10 +1,17 @@
-"use client";
-
+import { useState } from "react";
 import { projects } from "@/lib/projects";
 import { ProjectCard } from "./ProjectCard";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function ProjectGrid() {
+  const [activeCategory, setActiveCategory] = useState("ALL");
+
+  const filteredProjects = activeCategory === "ALL" 
+    ? projects 
+    : projects.filter(p => p.category.toUpperCase() === activeCategory);
+
+  const categories = ["ALL", "AUTOMATION", "AI", "DATA"];
+
   return (
     <section id="projects" className="py-24 px-4 bg-[#0D0D0D]">
       <div className="max-w-6xl mx-auto">
@@ -17,19 +24,37 @@ export default function ProjectGrid() {
               Each project represents a commitment to scalability and precision.
             </p>
           </div>
-          <div className="flex gap-2 font-mono text-xs text-white/40">
-            <span className="text-accent underline underline-offset-4">ALL</span>
-            <span className="hover:text-white cursor-pointer transition-colors">AUTOMATION</span>
-            <span className="hover:text-white cursor-pointer transition-colors">AI</span>
-            <span className="hover:text-white cursor-pointer transition-colors">DATA</span>
+          <div className="flex flex-wrap gap-4 md:gap-8 font-mono text-xs text-white/40">
+            {categories.map((cat) => (
+              <button
+                key={cat}
+                onClick={() => setActiveCategory(cat)}
+                className={`transition-all duration-300 hover:text-white relative pb-1 ${
+                  activeCategory === cat ? "text-accent font-bold" : ""
+                }`}
+              >
+                {cat}
+                {activeCategory === cat && (
+                  <motion.div 
+                    layoutId="activeCategory"
+                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-accent"
+                  />
+                )}
+              </button>
+            ))}
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {projects.map((project, index) => (
-            <ProjectCard key={project.id} project={project} index={index} />
-          ))}
-        </div>
+        <motion.div 
+          layout
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+        >
+          <AnimatePresence mode="popLayout">
+            {filteredProjects.map((project, index) => (
+              <ProjectCard key={project.id} project={project} index={index} />
+            ))}
+          </AnimatePresence>
+        </motion.div>
       </div>
     </section>
   );

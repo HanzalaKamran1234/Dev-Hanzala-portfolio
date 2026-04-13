@@ -56,9 +56,14 @@ export const ProjectCard = ({ project, index }: { project: Project; index: numbe
           ))}
         </div>
 
-        <button className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-white/5 border border-white/10 text-sm font-semibold hover:bg-white hover:text-black transition-all group-hover:border-transparent">
-          View Details <ExternalLink className="w-4 h-4" />
-        </button>
+        <a 
+          href="https://github.com/HanzalaKamran1234" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-white/5 border border-white/10 text-sm font-semibold hover:bg-white hover:text-black transition-all group-hover:border-transparent"
+        >
+          View Project <ExternalLink className="w-4 h-4" />
+        </a>
       </div>
 
       {/* Hover Gradient Overlay */}
